@@ -13,26 +13,49 @@ module.exports.handler = async (event, context) => {
     Key: key,
   };
 
-  let data = async function () {
-    // get csv file and create stream
-    const stream = S3.getObject(params).createReadStream();
-    // convert csv file (stream) to JSON format data
-    const json = await csv().fromStream(stream);
+  const sourceToDestinationParams = () => ({
+    Bucket: bucket,
+    CopySource: `${bucket}/${key}`,
+    Key: `${key.replace('uploads/', 'processed/')}`,
+  });
 
-    return json;
-  };
+  try {
+    let csvData = await getJsonDataFromS3(params);
 
-  let csvData = await data();
+    await copyFile(sourceToDestinationParams);
+    await deleteFile(params);
+    console.log(csvData);
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: 'Go Serverless v1.0! Your function executed successfully!',
-      input: event,
-      data: csvData,
-    }),
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({
+        input: event,
+        data: csvData,
+      }),
+    };
+  } catch (error) {
+    console.log(error.message);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: error.message,
+      }),
+    };
+  }
 
   // Use this code if you don't use the http event with the LAMBDA-PROXY integration
   // return { message: 'Go Serverless v1.0! Your function executed successfully!', event };
+};
+
+const copyFile = (sourceToDestinationParams) => s3.copyObject(sourceToDestinationParams).promise();
+
+const deleteFile = (sourceParams) => s3.deleteObject(sourceParams).promise();
+
+const getJsonDataFromS3 = async (sourceParams) => {
+  // get csv file and create stream
+  const stream = s3.getObject(sourceParams).createReadStream();
+  // convert csv file (stream) to JSON format data
+  const json = await csv().fromStream(stream);
+
+  return json;
 };
