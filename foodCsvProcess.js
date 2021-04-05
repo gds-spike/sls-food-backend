@@ -13,11 +13,11 @@ module.exports.handler = async (event, context) => {
     Key: key,
   };
 
-  const sourceToDestinationParams = () => ({
+  const sourceToDestinationParams = {
     Bucket: bucket,
     CopySource: `${bucket}/${key}`,
     Key: `${key.replace('uploads/', 'processed/')}`,
-  });
+  };
 
   try {
     let csvData = await getJsonDataFromS3(params);
