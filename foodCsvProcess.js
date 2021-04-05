@@ -2,6 +2,11 @@
 const aws = require('aws-sdk');
 const s3 = new aws.S3({ apiVersion: '2006-03-01' });
 const csv = require('csvtojson');
+var docClient = new aws.DynamoDB.DocumentClient();
+
+aws.config.update({
+  region: 'ap-southeast-1',
+});
 
 module.exports.handler = async (event, context) => {
   // Get the object from the event and show its content type
@@ -21,6 +26,7 @@ module.exports.handler = async (event, context) => {
 
   try {
     let csvData = await getJsonDataFromS3(params);
+    putIntoDynamoDb(csvData);
 
     await copyFile(sourceToDestinationParams);
     await deleteFile(params);
@@ -55,4 +61,19 @@ const getJsonDataFromS3 = async (sourceParams) => {
   const json = await csv().fromStream(stream);
 
   return json;
+};
+
+const putIntoDynamoDb = (arr) => {
+  arr.forEach(async (row) => {
+    const params = {
+      TableName: process.env.FOOD_TABLE,
+      Item: row,
+    };
+
+    try {
+      await docClient.put(params).promise();
+    } catch (error) {
+      console.log('Unable to add row', row.No, error.message);
+    }
+  });
 };
