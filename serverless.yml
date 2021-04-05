@@ -17,45 +17,45 @@ resources:
   Resources:
     FoodTable:
       Type: AWS::DynamoDB::Table
-      DeletionPolicy: Retain
+      # DeletionPolicy: Retain
       Properties:
         TableName: ${self:provider.environment.FOOD_TABLE}
         AttributeDefinitions:
-          - AttributeName: clientPostalUnit
+          - AttributeName: PostalUnit
             AttributeType: S
-          - AttributeName: clientPostalCode
+          - AttributeName: Postal
             AttributeType: S
-          - AttributeName: programmeId
+          - AttributeName: Programme
             AttributeType: S
-          - AttributeName: location
+          - AttributeName: Location
             AttributeType: S
         KeySchema:
-          - AttributeName: clientPostalUnit
+          - AttributeName: PostalUnit
             KeyType: HASH
-          - AttributeName: clientPostalCode
+          - AttributeName: Postal
             KeyType: RANGE
         LocalSecondaryIndexes:
-          - IndexName: programmeIndex
+          - IndexName: ProgrammeIndex
             KeySchema:
-              - AttributeName: clientPostalUnit
+              - AttributeName: PostalUnit
                 KeyType: HASH
-              - AttributeName: programmeId
+              - AttributeName: Programme
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
         GlobalSecondaryIndexes:
-          - IndexName: programmeGlobalIndex
+          - IndexName: ProgrammeGlobalIndex
             KeySchema:
-              - AttributeName: programmeId
+              - AttributeName: Programme
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-          - IndexName: locationGlobalIndex
+          - IndexName: LocationGlobalIndex
             KeySchema:
-              - AttributeName: location
+              - AttributeName: Location
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
@@ -95,8 +95,15 @@ resources:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  foodCsvProcess:
+    handler: foodCsvProcess.handler
+    events:
+      - s3:
+          bucket: food-security-csv
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: uploads/
+            - suffix: .csv
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
