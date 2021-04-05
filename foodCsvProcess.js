@@ -26,7 +26,7 @@ module.exports.handler = async (event, context) => {
 
   try {
     let csvData = await getJsonDataFromS3(params);
-    putIntoDynamoDb(csvData);
+    await putIntoDynamoDb(csvData);
 
     await copyFile(sourceToDestinationParams);
     await deleteFile(params);
@@ -63,17 +63,18 @@ const getJsonDataFromS3 = async (sourceParams) => {
   return json;
 };
 
-const putIntoDynamoDb = (arr) => {
-  arr.forEach(async (row) => {
-    const params = {
-      TableName: process.env.FOOD_TABLE,
-      Item: row,
-    };
+const putIntoDynamoDb = async (arr) =>
+  await Promise.all(
+    arr.map(async (row) => {
+      const params = {
+        TableName: process.env.FOOD_TABLE,
+        Item: row,
+      };
 
-    try {
-      await docClient.put(params).promise();
-    } catch (error) {
-      console.log('Unable to add row', row.No, error.message);
-    }
-  });
-};
+      try {
+        await docClient.put(params).promise();
+      } catch (error) {
+        console.log('Unable to add row', row.No, error.message);
+      }
+    }),
+  );
