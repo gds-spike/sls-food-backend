@@ -21,16 +21,16 @@ module.exports.handler = async (event, context) => {
   const sourceToDestinationParams = {
     Bucket: bucket,
     CopySource: `${bucket}/${key}`,
-    Key: `${key.replace('uploads/', 'processed/')}`,
+    Key: `${key.replace('2-uploads/', '3-processed/')}`,
   };
 
   try {
     let csvData = await getJsonDataFromS3(params);
-    await putIntoDynamoDb(csvData);
+    console.log(csvData);
 
+    await putIntoDynamoDb(csvData);
     await copyFile(sourceToDestinationParams);
     await deleteFile(params);
-    console.log(csvData);
 
     return {
       statusCode: 200,

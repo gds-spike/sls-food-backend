@@ -96,14 +96,14 @@ resources:
 #    - exclude-me-dir/**
 
 functions:
-  foodCsvProcess:
-    handler: foodCsvProcess.handler
+  pushCsvToDynamoDb:
+    handler: utils/pushCsvToDynamoDb.handler
     events:
       - s3:
           bucket: food-security-csv
           event: s3:ObjectCreated:*
           rules:
-            - prefix: uploads/
+            - prefix: 2-uploads/
             - suffix: .csv
 
   transformXlsxToCsv:
@@ -114,7 +114,7 @@ functions:
           bucket: food-security-csv
           event: s3:ObjectCreated:*
           rules:
-            - prefix: raw/
+            - prefix: 1-raw/
             - suffix: .xlsx
           existing: true
 #    The following are a few example events you can configure

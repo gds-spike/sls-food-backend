@@ -27,18 +27,11 @@ module.exports.handler = async (event, context) => {
     await Promise.all(
       sheetNames.map(async (sheetName) => {
         if (!Object.keys(sheetsConfig).includes(sheetName)) return;
-
-        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName], {
-          blankrows: false,
-          strip: true,
-        });
-
-        const finalCsv = generateFinalCsv(csv, sheetsConfig[sheetName]);
-
+        const csv = getCsv(workbook, sheetName);
         const param = {
           Bucket: bucket,
-          Key: `temp/${sheetName}.csv`,
-          Body: finalCsv,
+          Key: `2-uploads/${sheetName}.csv`,
+          Body: generateFinalCsv(csv, sheetsConfig[sheetName]),
         };
         try {
           await s3.putObject(param).promise();
@@ -47,10 +40,12 @@ module.exports.handler = async (event, context) => {
         }
       }),
     );
+
+    await deleteFile(params);
+    console.log('done');
   } catch (error) {
     console.log(error.message);
   }
-  console.log('done');
 };
 
 const getBufferFromS3 = (params, callback) => {
@@ -71,6 +66,12 @@ function getBufferFromS3Promise(params) {
   });
 }
 
+const getCsv = (workbook, sheetName) =>
+  XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName], {
+    blankrows: false,
+    strip: true,
+  });
+
 const generateFinalCsv = (originalCsv, sheetConfig) => {
   const headersStr = sheetConfig.headers.join(',');
   const cleanCsvArr = originalCsv
@@ -81,3 +82,5 @@ const generateFinalCsv = (originalCsv, sheetConfig) => {
 
   return [headersStr, ...cleanCsvArr].join('\n');
 };
+
+const deleteFile = (sourceParams) => s3.deleteObject(sourceParams).promise();
