@@ -50,6 +50,7 @@ module.exports.handler = async (event, context) => {
   } catch (error) {
     console.log(error.message);
   }
+  console.log('done');
 };
 
 const getBufferFromS3 = (params, callback) => {
