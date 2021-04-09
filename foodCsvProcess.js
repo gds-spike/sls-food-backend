@@ -54,9 +54,9 @@ const copyFile = (sourceToDestinationParams) => s3.copyObject(sourceToDestinatio
 
 const deleteFile = (sourceParams) => s3.deleteObject(sourceParams).promise();
 
-const getJsonDataFromS3 = async (sourceParams) => {
+const getJsonDataFromS3 = async (params) => {
   // get csv file and create stream
-  const stream = s3.getObject(sourceParams).createReadStream();
+  const stream = s3.getObject(params).createReadStream();
   // convert csv file (stream) to JSON format data
   const json = await csv().fromStream(stream);
 

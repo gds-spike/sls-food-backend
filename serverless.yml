@@ -7,7 +7,7 @@ provider:
   lambdaHashingVersion: 20201221
   stage: prod
   region: ap-southeast-1
-  memorySize: 256
+  memorySize: 512
   timeout: 120
   endpointType: regional
   environment:
@@ -105,6 +105,18 @@ functions:
           rules:
             - prefix: uploads/
             - suffix: .csv
+
+  transformXlsxToCsv:
+    handler: utils/transformXlsxToCsv.handler
+    timeout: 120
+    events:
+      - s3:
+          bucket: food-security-csv
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: raw/
+            - suffix: .xlsx
+          existing: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
