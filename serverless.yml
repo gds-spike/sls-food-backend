@@ -47,38 +47,38 @@ resources:
       Properties:
         TableName: ${self:provider.environment.FOOD_TABLE}
         AttributeDefinitions:
-          - AttributeName: PostalUnit
+          - AttributeName: postalCodeUnit
             AttributeType: S
-          - AttributeName: Postal
+          - AttributeName: postalCode
             AttributeType: S
-          - AttributeName: Programme
+          - AttributeName: programmeName
             AttributeType: S
-          - AttributeName: Location
+          - AttributeName: location
             AttributeType: S
         KeySchema:
-          - AttributeName: PostalUnit
+          - AttributeName: postalCodeUnit
             KeyType: HASH
-          - AttributeName: Postal
+          - AttributeName: postalCode
             KeyType: RANGE
         LocalSecondaryIndexes:
-          - IndexName: ProgrammeIndex
+          - IndexName: programmeNameIndex
             KeySchema:
-              - AttributeName: PostalUnit
+              - AttributeName: postalCodeUnit
                 KeyType: HASH
-              - AttributeName: Programme
+              - AttributeName: programmeName
                 KeyType: RANGE
             Projection:
               ProjectionType: ALL
         GlobalSecondaryIndexes:
-          - IndexName: ProgrammeGlobalIndex
+          - IndexName: programmeNameGlobalIndex
             KeySchema:
-              - AttributeName: Programme
+              - AttributeName: programmeName
                 KeyType: HASH
             Projection:
               ProjectionType: ALL
-          - IndexName: LocationGlobalIndex
+          - IndexName: locationGlobalIndex
             KeySchema:
-              - AttributeName: Location
+              - AttributeName: location
                 KeyType: HASH
             Projection:
               ProjectionType: ALL

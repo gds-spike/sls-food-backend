@@ -1,6 +1,7 @@
 const bucketFolders = require('../config/bucketFolders');
 const { copyFile, deleteFile, getJsonDataFromCsvInS3 } = require('../utils/s3Utils');
 const { putArrayIntoDynamo } = require('../utils/dynamoDbUtils');
+const { transformCsv } = require('../utils/csvUtils');
 
 module.exports.handler = async (event) => {
   // Get the object from the event and show its content type
@@ -20,7 +21,9 @@ module.exports.handler = async (event) => {
 
   try {
     let csvData = await getJsonDataFromCsvInS3(params);
-    await putArrayIntoDynamo(csvData);
+    const transformedCsv = transformCsv(csvData);
+    console.log(transformedCsv);
+    await putArrayIntoDynamo(transformedCsv);
     await copyFile(sourceToDestinationParams);
     await deleteFile(params);
   } catch (error) {
