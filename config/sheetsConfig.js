@@ -1,4 +1,4 @@
-module.exports = {
+const sheetsConfig = {
   'Cooked Meals': {
     trimTopRows: 7,
     headers: [
@@ -68,3 +68,5 @@ module.exports = {
     ],
   },
 };
+
+module.exports = sheetsConfig;

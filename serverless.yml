@@ -8,7 +8,7 @@ provider:
   stage: prod
   region: ap-southeast-1
   memorySize: 512
-  timeout: 120
+  timeout: 60
   endpointType: regional
   environment:
     FOOD_TABLE: ${self:service}-${opt:stage, self:provider.stage}
@@ -85,6 +85,17 @@ resources:
         BillingMode: PAY_PER_REQUEST
 
 functions:
+  transformXlsxToCsv:
+    handler: lambda/transformXlsxToCsv.handler
+    memorySize: 10240
+    events:
+      - s3:
+          bucket: food-security-csv
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${file(./config/bucketFolders.js):first}
+            - suffix: .xlsx
+
   pushCsvToDynamoDb:
     handler: lambda/pushCsvToDynamoDb.handler
     events:
@@ -92,16 +103,5 @@ functions:
           bucket: food-security-csv
           event: s3:ObjectCreated:*
           rules:
-            - prefix: 2-uploads/
+            - prefix: ${file(./config/bucketFolders.js):second}
             - suffix: .csv
-
-  transformXlsxToCsv:
-    handler: lambda/transformXlsxToCsv.handler
-    timeout: 120
-    events:
-      - s3:
-          bucket: food-security-csv
-          event: s3:ObjectCreated:*
-          rules:
-            - prefix: 1-raw/
-            - suffix: .xlsx

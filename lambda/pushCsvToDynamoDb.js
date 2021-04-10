@@ -1,3 +1,4 @@
+const bucketFolders = require('../config/bucketFolders');
 const { copyFile, deleteFile, getJsonDataFromCsvInS3 } = require('../utils/s3Utils');
 const { putArrayIntoDynamo } = require('../utils/dynamoDbUtils');
 
@@ -14,7 +15,7 @@ module.exports.handler = async (event) => {
   const sourceToDestinationParams = {
     Bucket: bucket,
     CopySource: `${bucket}/${key}`,
-    Key: `${key.replace('2-uploads/', '3-processed/')}`,
+    Key: `${key.replace(bucketFolders.second, bucketFolders.third)}`,
   };
 
   try {

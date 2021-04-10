@@ -1,4 +1,5 @@
-const sheetsConfig = require('../config');
+const bucketFolders = require('../config/bucketFolders');
+const sheetsConfig = require('../config/sheetsConfig');
 const {
   getWorkbookFromBuffer,
   getCsvFromWorkbook,
@@ -26,14 +27,18 @@ module.exports.handler = async (event) => {
     await Promise.all(
       sheetNames.map(async (sheetName) => {
         if (!Object.keys(sheetsConfig).includes(sheetName)) return;
+        console.log(`Extracting Csv From Workbook: ${key} - Sheet Name: ${sheetName}`);
         const csv = getCsvFromWorkbook(workbook, sheetName);
+        console.log(`Extraction Complete Workbook: ${key} - Sheet Name: ${sheetName}`);
+
         const param = {
           Bucket: bucket,
-          Key: `2-uploads/${sheetName}.csv`,
+          Key: `${bucketFolders.second}${sheetName}.csv`,
           Body: formatCsvWithConfig(csv, sheetsConfig[sheetName]),
         };
         try {
           await putFile(param);
+          console.log(`Put File Complete : ${bucketFolders.second}${sheetName}.csv`);
         } catch (error) {
           console.log(param.Key, error.message);
         }
@@ -41,7 +46,7 @@ module.exports.handler = async (event) => {
     );
 
     await deleteFile(params);
-    console.log('done');
+    console.log(`Deleted ${key} - Completed Function`);
   } catch (error) {
     console.log(error.message);
   }
