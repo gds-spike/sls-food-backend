@@ -1,8 +1,7 @@
 const transformCsv = (csv) => {
-  let transformedCsv = addPaddingToUnit(csv);
-  transformedCsv = addPostalCodeUnit(csv);
-
-  transformedCsv = [...getProfileRows(transformedCsv)];
+  const csvWithUnitPadding = addPaddingToUnit(csv);
+  const csvWithPostalCode = addPostalCodeUnit(csvWithUnitPadding);
+  const transformedCsv = [...getProfileRows(csvWithPostalCode)];
 
   return transformedCsv;
 };
@@ -12,7 +11,9 @@ const addPaddingToUnit = (csv) =>
     let unit = row.unit;
     let dashPosition = unit.indexOf('-');
 
-    if (dashPosition <= 0 || unit.length <= dashPosition + 1) return row;
+    if (dashPosition <= 0) return { ...row, unit: unit.padStart(3, '0') };
+
+    if (unit.length <= dashPosition + 1) return row;
     const floor = unit.substring(0, dashPosition).padStart(3, '0');
 
     let unitNo = unit.substring(dashPosition + 1);
@@ -28,9 +29,10 @@ const getProfileRows = (csv) =>
   csv.map((row) => ({
     ...row,
     PK: `CLIENT#${row.postalCodeUnit}`,
-    SK: `#PROFILE#${row.postalCodeUnit}`,
+    SK: `#PROFILESOURCE#${row.dataSource}`,
   }));
 
 module.exports = {
   transformCsv,
+  addPaddingToUnit,
 };
