@@ -1,6 +1,9 @@
 const transformCsv = (csv) => {
   let transformedCsv = addPaddingToUnit(csv);
   transformedCsv = addPostalCodeUnit(csv);
+
+  transformedCsv = [...getProfileRows(transformedCsv)];
+
   return transformedCsv;
 };
 
@@ -20,6 +23,13 @@ const addPaddingToUnit = (csv) =>
 
 const addPostalCodeUnit = (csv) =>
   csv.map((row) => ({ ...row, postalCodeUnit: `${row.postalCode}-${row.unit}` }));
+
+const getProfileRows = (csv) =>
+  csv.map((row) => ({
+    ...row,
+    PK: `CLIENT#${row.postalCodeUnit}`,
+    SK: `#PROFILE#${row.postalCodeUnit}`,
+  }));
 
 module.exports = {
   transformCsv,

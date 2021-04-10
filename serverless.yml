@@ -47,41 +47,41 @@ resources:
       Properties:
         TableName: ${self:provider.environment.FOOD_TABLE}
         AttributeDefinitions:
-          - AttributeName: postalCodeUnit
+          - AttributeName: PK
             AttributeType: S
-          - AttributeName: postalCode
+          - AttributeName: SK
             AttributeType: S
-          - AttributeName: programmeName
-            AttributeType: S
-          - AttributeName: location
-            AttributeType: S
+          # - AttributeName: programmeName
+          #   AttributeType: S
+          # - AttributeName: location
+          #   AttributeType: S
         KeySchema:
-          - AttributeName: postalCodeUnit
+          - AttributeName: PK
             KeyType: HASH
-          - AttributeName: postalCode
+          - AttributeName: SK
             KeyType: RANGE
-        LocalSecondaryIndexes:
-          - IndexName: programmeNameIndex
-            KeySchema:
-              - AttributeName: postalCodeUnit
-                KeyType: HASH
-              - AttributeName: programmeName
-                KeyType: RANGE
-            Projection:
-              ProjectionType: ALL
-        GlobalSecondaryIndexes:
-          - IndexName: programmeNameGlobalIndex
-            KeySchema:
-              - AttributeName: programmeName
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
-          - IndexName: locationGlobalIndex
-            KeySchema:
-              - AttributeName: location
-                KeyType: HASH
-            Projection:
-              ProjectionType: ALL
+        # LocalSecondaryIndexes:
+        #   - IndexName: programmeNameIndex
+        #     KeySchema:
+        #       - AttributeName: postalCodeUnit
+        #         KeyType: HASH
+        #       - AttributeName: programmeName
+        #         KeyType: RANGE
+        #     Projection:
+        #       ProjectionType: ALL
+        # GlobalSecondaryIndexes:
+        #   - IndexName: programmeNameGlobalIndex
+        #     KeySchema:
+        #       - AttributeName: programmeName
+        #         KeyType: HASH
+        #     Projection:
+        #       ProjectionType: ALL
+        #   - IndexName: locationGlobalIndex
+        #     KeySchema:
+        #       - AttributeName: location
+        #         KeyType: HASH
+        #     Projection:
+        #       ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
 
 functions:

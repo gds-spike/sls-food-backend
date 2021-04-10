@@ -22,10 +22,18 @@ module.exports.handler = async (event) => {
   try {
     let csvData = await getJsonDataFromCsvInS3(params);
     const transformedCsv = transformCsv(csvData);
-    console.log(transformedCsv);
+    console.log(
+      `Inserting Records into DynamoDb: file - ${params.Key} length -${transformCsv.length}`,
+    );
+
     await putArrayIntoDynamo(transformedCsv);
+    console.log(`Finished Insertion ${params.Key}`);
+
     await copyFile(sourceToDestinationParams);
+    console.log(`File Coped From ${params.Key} to ${bucketFolders.third}`);
+
     await deleteFile(params);
+    console.log(`File Deleted: ${params.Key}`);
   } catch (error) {
     console.log(error.message);
   }
