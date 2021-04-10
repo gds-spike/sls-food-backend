@@ -86,7 +86,7 @@ resources:
 
 functions:
   pushCsvToDynamoDb:
-    handler: utils/pushCsvToDynamoDb.handler
+    handler: lambda/pushCsvToDynamoDb.handler
     events:
       - s3:
           bucket: food-security-csv
@@ -96,7 +96,7 @@ functions:
             - suffix: .csv
 
   transformXlsxToCsv:
-    handler: utils/transformXlsxToCsv.handler
+    handler: lambda/transformXlsxToCsv.handler
     timeout: 120
     events:
       - s3:
