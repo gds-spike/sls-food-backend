@@ -1,36 +1,48 @@
+const { padUnit } = require('./transformUtils');
+
 const transformCsv = (csv) => {
   const csvWithUnitPadding = addPaddingToUnit(csv);
   const csvWithPostalCode = addPostalCodeUnit(csvWithUnitPadding);
-  const transformedCsv = [...getProfileRows(csvWithPostalCode)];
+  const transformedCsv = [
+    ...getProfileRows(csvWithPostalCode),
+    ...getProgrammeRows(csvWithPostalCode),
+  ];
 
   return transformedCsv;
 };
 
-const addPaddingToUnit = (csv) =>
-  csv.map((row) => {
-    let unit = row.unit;
-    let dashPosition = unit.indexOf('-');
-
-    if (dashPosition <= 0) return { ...row, unit: unit.padStart(3, '0') };
-
-    if (unit.length <= dashPosition + 1) return row;
-    const floor = unit.substring(0, dashPosition).padStart(3, '0');
-
-    let unitNo = unit.substring(dashPosition + 1);
-    unitNo = unitNo.length >= 5 ? unitNo : unitNo.padStart(5, '0');
-
-    return { ...row, unit: `${floor}-${unitNo}` };
-  });
+const addPaddingToUnit = (csv) => csv.map((row) => ({ ...row, unit: padUnit(row.unit) }));
 
 const addPostalCodeUnit = (csv) =>
   csv.map((row) => ({ ...row, postalCodeUnit: `${row.postalCode}-${row.unit}` }));
 
 const getProfileRows = (csv) =>
-  csv.map((row) => ({
-    ...row,
-    PK: `CLIENT#${row.postalCodeUnit}`,
-    SK: `#PROFILESOURCE#${row.dataSource}`,
-  }));
+  csv
+    .map((row) => ({
+      ...row,
+      PK: `CLIENT#${row.postalCodeUnit}`,
+      SK: `#SOURCE#${row.dataSource}`,
+    }))
+    // Indicate columns to drop for client info
+    .map(({ startDate, endDate, frequency, regularity, programmeName, ...rest }) => rest);
+
+const getProgrammeRows = (csv) =>
+  csv
+    .map((row) => ({
+      ...row,
+      PK: `CLIENT#${row.postalCodeUnit}`,
+      SK: `#PROGRAMME#${row.programmeName}`,
+    }))
+    // Indicate the columns to keep for programme info
+    .map(({ PK, SK, programmeName, startDate, endDate, frequency, regularity }) => ({
+      PK,
+      SK,
+      programmeName,
+      startDate,
+      endDate,
+      frequency,
+      regularity,
+    }));
 
 module.exports = {
   transformCsv,

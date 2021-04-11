@@ -1,3 +1,5 @@
+org: sheen4n
+app: sls-food-backend
 service: sls-food-backend
 frameworkVersion: '2'
 
@@ -51,9 +53,9 @@ resources:
             AttributeType: S
           - AttributeName: SK
             AttributeType: S
-          # - AttributeName: programmeName
+          # - AttributeName: GSI2PK
           #   AttributeType: S
-          # - AttributeName: location
+          # - AttributeName: GSI2SK
           #   AttributeType: S
         KeySchema:
           - AttributeName: PK
@@ -69,19 +71,23 @@ resources:
         #         KeyType: RANGE
         #     Projection:
         #       ProjectionType: ALL
-        # GlobalSecondaryIndexes:
-        #   - IndexName: programmeNameGlobalIndex
-        #     KeySchema:
-        #       - AttributeName: programmeName
-        #         KeyType: HASH
-        #     Projection:
-        #       ProjectionType: ALL
-        #   - IndexName: locationGlobalIndex
-        #     KeySchema:
-        #       - AttributeName: location
-        #         KeyType: HASH
-        #     Projection:
-        #       ProjectionType: ALL
+        GlobalSecondaryIndexes:
+          - IndexName: invertedIndex
+            KeySchema:
+              - AttributeName: PK
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          # - IndexName: GSI2
+          #   KeySchema:
+          #     - AttributeName: GSI2PK
+          #       KeyType: HASH
+          #     - AttributeName: GSI2SK
+          #       KeyType: RANGE
+          #   Projection:
+          #     ProjectionType: ALL
         BillingMode: PAY_PER_REQUEST
 
 functions:
