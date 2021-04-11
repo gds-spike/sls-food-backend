@@ -15,6 +15,40 @@ const padUnit = (unit) => {
   return `${floor}-${unitNo}`;
 };
 
+const getProfileRows = (csv) =>
+  csv
+    // Add the index
+    .map((row) => ({
+      ...row,
+      PK: `CLIENT#${row.postalCodeUnit}`,
+      SK: `#SOURCE#${row.dataSource}`,
+    }))
+    // Indicate columns to drop for client info
+    .map(({ no, startDate, endDate, frequency, regularity, programmeName, ...rest }) => rest);
+
+const getProgrammeRows = (csv) =>
+  csv
+    // Filter rows with no programme name
+    .filter((row) => !row.programmeName)
+    // Add the index
+    .map((row) => ({
+      ...row,
+      PK: `CLIENT#${row.postalCodeUnit}`,
+      SK: `#PROGRAMME#${row.programmeName}`,
+    }))
+    // Indicate the columns to keep for programme info
+    .map(({ PK, SK, programmeName, startDate, endDate, frequency, regularity }) => ({
+      PK,
+      SK,
+      programmeName,
+      startDate,
+      endDate,
+      frequency,
+      regularity,
+    }));
+
 module.exports = {
+  getProfileRows,
+  getProgrammeRows,
   padUnit,
 };
