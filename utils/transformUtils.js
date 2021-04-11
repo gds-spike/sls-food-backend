@@ -29,7 +29,7 @@ const getProfileRows = (csv) =>
 const getProgrammeRows = (csv) =>
   csv
     // Filter rows with no programme name
-    .filter((row) => !row.programmeName)
+    .filter((row) => row.programmeName)
     // Add the index
     .map((row) => ({
       ...row,
