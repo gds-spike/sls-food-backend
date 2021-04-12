@@ -31,16 +31,16 @@ module.exports.handler = async (event) => {
         const csv = getCsvFromWorkbook(workbook, sheetName);
         console.log(`Extraction Complete Workbook: ${key} - Sheet Name: ${sheetName}`);
 
-        const param = {
+        const sheetParams = {
           Bucket: bucket,
           Key: `${bucketFolders.second}${sheetName}.csv`,
           Body: formatCsvWithConfig(csv, sheetsConfig[sheetName]),
         };
         try {
-          await putFile(param);
+          await putFile(sheetParams);
           console.log(`Put File Complete : ${bucketFolders.second}${sheetName}.csv`);
         } catch (error) {
-          console.log(param.Key, error.message);
+          console.log(sheetParams.Key, error.message);
         }
       }),
     );

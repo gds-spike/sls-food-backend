@@ -3,6 +3,9 @@ app: sls-food-backend
 service: sls-food-backend
 frameworkVersion: '2'
 
+plugins:
+  - serverless-offline
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -119,7 +122,7 @@ functions:
     timeout: 20
     events:
       - http:
-          path: clients
+          path: clients/{id}
           method: get
           cors: true
 
@@ -130,6 +133,6 @@ functions:
     timeout: 20
     events:
       - http:
-          path: clients/programmes
+          path: clients/programmes/{id}
           method: get
           cors: true

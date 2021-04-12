@@ -10,7 +10,7 @@ const copyFile = (params) => s3.copyObject(params).promise();
 
 const deleteFile = (params) => s3.deleteObject(params).promise();
 
-const putFile = (param) => s3.putObject(param).promise();
+const putFile = (params) => s3.putObject(params).promise();
 
 const getJsonDataFromCsvInS3 = async (params) => {
   // get csv file and create stream

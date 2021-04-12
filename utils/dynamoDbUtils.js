@@ -1,21 +1,16 @@
-const aws = require('aws-sdk');
-var docClient = new aws.DynamoDB.DocumentClient();
+var docClient = require('../startup/dynamodb');
 
-aws.config.update({
-  region: 'ap-southeast-1',
-});
-
-const putItemIntoDynamo = (param) => docClient.put(param).promise();
+const putItemIntoDynamo = (params) => docClient.put(params).promise();
 
 const putArrayIntoDynamo = async (arr) =>
   await Promise.all(
     arr.map(async (row) => {
-      const param = {
+      const params = {
         TableName: process.env.FOOD_TABLE,
         Item: row,
       };
 
-      await putItemIntoDynamo(param);
+      await putItemIntoDynamo(params);
 
       try {
       } catch (error) {
@@ -24,6 +19,9 @@ const putArrayIntoDynamo = async (arr) =>
     }),
   );
 
+const queryDynamo = (params) => docClient.query(params).promise();
+
 module.exports = {
   putArrayIntoDynamo,
+  queryDynamo,
 };
