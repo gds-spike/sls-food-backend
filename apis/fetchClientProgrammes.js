@@ -23,12 +23,22 @@ module.exports.handler = async (event) => {
     return {
       statusCode: 200,
       body: JSON.stringify(queryOutput.Items),
+      headers: {
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+      },
     };
   } catch (error) {
     console.log(error.message);
     return {
       statusCode: error.statusCode || 501,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Origin': 'https://www.example.com',
+        'Access-Control-Allow-Methods': 'OPTIONS,POST,GET',
+      },
       body: "Couldn't fetch the client profile.",
     };
   }
