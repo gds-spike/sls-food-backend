@@ -113,7 +113,7 @@ functions:
             - suffix: .csv
 
   fetchClientProfile:
-    handler: apis/fetchClientProfile.js
+    handler: apis/fetchClientProfile.handler
     memorySize: 128
     description: Fetch client profile
     events:
