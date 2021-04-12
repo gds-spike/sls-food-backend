@@ -116,7 +116,20 @@ functions:
     handler: apis/fetchClientProfile.handler
     memorySize: 128
     description: Fetch client profile
+    timeout: 20
     events:
       - http:
           path: clients
           method: get
+          cors: true
+
+  fetchClientProgrammes:
+    handler: apis/fetchClientProgrammes.handler
+    memorySize: 128
+    description: Fetch client programmes
+    timeout: 20
+    events:
+      - http:
+          path: clients/programmes
+          method: get
+          cors: true
