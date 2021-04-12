@@ -92,7 +92,7 @@ resources:
 
 functions:
   transformXlsxToCsv:
-    handler: lambda/transformXlsxToCsv.handler
+    handler: lambdas/transformXlsxToCsv.handler
     memorySize: 10240
     events:
       - s3:
@@ -103,7 +103,7 @@ functions:
             - suffix: .xlsx
 
   pushCsvToDynamoDb:
-    handler: lambda/pushCsvToDynamoDb.handler
+    handler: lambdas/pushCsvToDynamoDb.handler
     events:
       - s3:
           bucket: food-security-csv
@@ -111,3 +111,12 @@ functions:
           rules:
             - prefix: ${file(./config/bucketFolders.js):second}
             - suffix: .csv
+
+  fetchClientProfile:
+    handler: apis/fetchClientProfile.js
+    memorySize: 128
+    description: Fetch client profile
+    events:
+      - http:
+          path: clients
+          method: get
