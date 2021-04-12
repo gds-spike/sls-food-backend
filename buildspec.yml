@@ -4,7 +4,7 @@ phases:
   install:
     commands:
       - echo Installing Serverless...
-      - yarn add global serverless
+      - yarn global add serverless
   pre_build:
     commands:
       - echo Install source NPM dependencies...
