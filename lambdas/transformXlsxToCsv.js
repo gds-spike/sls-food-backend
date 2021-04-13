@@ -34,7 +34,7 @@ module.exports.handler = async (event) => {
 
         const sheetParams = {
           Bucket: bucket,
-          Key: `${timeNowString}-${bucketFolders.second}${sheetName}.csv`,
+          Key: `${bucketFolders.second}${timeNowString}-${sheetName}.csv`,
           Body: formatCsvWithConfig(csv, sheetsConfig[sheetName]),
         };
         try {
