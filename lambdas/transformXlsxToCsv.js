@@ -11,6 +11,7 @@ module.exports.handler = async (event) => {
   // Get the object from the event and show its content type
   const bucket = event.Records[0].s3.bucket.name;
   const key = decodeURIComponent(event.Records[0].s3.object.key.replace(/\+/g, ' '));
+  const timeNowString = new Date().toISOString().substring(0, 19);
 
   const params = {
     Bucket: bucket,
@@ -33,7 +34,7 @@ module.exports.handler = async (event) => {
 
         const sheetParams = {
           Bucket: bucket,
-          Key: `${bucketFolders.second}${sheetName}.csv`,
+          Key: `${timeNowString}-${bucketFolders.second}${sheetName}.csv`,
           Body: formatCsvWithConfig(csv, sheetsConfig[sheetName]),
         };
         try {
