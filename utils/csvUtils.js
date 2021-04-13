@@ -19,4 +19,5 @@ const addPostalCodeUnit = (csv) =>
 module.exports = {
   transformCsv,
   addPaddingToUnit,
+  addPostalCodeUnit,
 };
