@@ -6,7 +6,10 @@
   "main": "handler.js",
   "scripts": {
     "test": "jest --watchAll --runInBand",
-    "dev": "serverless offline"
+    "dev": "serverless offline",
+    "deploy:dev": "cd environments/dev && serverless deploy -v -s dev",
+    "deploy:uat": "cd environments/uat && serverless deploy -v -s uat",
+    "deploy:prod": "cd environments/prod && serverless deploy -v -s prod"
   },
   "keywords": [],
   "author": "",

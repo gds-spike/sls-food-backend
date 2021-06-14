@@ -1,0 +1,140 @@
+org: sheen4n
+app: sls-food-backend
+service: sls-food-backend
+frameworkVersion: '2'
+
+plugins:
+  - serverless-offline
+
+# Need to change to use ALB with Listener as events for UAT/PROD
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  stage: uat
+  region: ap-southeast-1
+  memorySize: 512
+  timeout: 60
+  endpointType: regional
+  environment:
+    FOOD_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  s3:
+    food-security-csv:
+      name: food-security-csv
+  iam:
+    role:
+      statements: # permissions for all of your functions can be set here
+        - Effect: Allow
+          Action: # Gives permission to DynamoDB tables in a specific region
+            - dynamodb:DescribeTable
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: 'arn:aws:dynamodb:ap-southeast-1:*:*'
+        - Effect: Allow
+          Action:
+            - s3:ListBucket
+          Resource: 'arn:aws:s3:::*'
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+            - 's3:DeleteObject'
+          Resource: 'arn:aws:s3:::food-security-csv/*'
+
+resources:
+  Resources:
+    FoodTable:
+      Type: AWS::DynamoDB::Table
+      # DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.FOOD_TABLE}
+        AttributeDefinitions:
+          - AttributeName: PK
+            AttributeType: S
+          - AttributeName: SK
+            AttributeType: S
+          # - AttributeName: GSI2PK
+          #   AttributeType: S
+          # - AttributeName: GSI2SK
+          #   AttributeType: S
+        KeySchema:
+          - AttributeName: PK
+            KeyType: HASH
+          - AttributeName: SK
+            KeyType: RANGE
+        # LocalSecondaryIndexes:
+        #   - IndexName: programmeNameIndex
+        #     KeySchema:
+        #       - AttributeName: postalCodeUnit
+        #         KeyType: HASH
+        #       - AttributeName: programmeName
+        #         KeyType: RANGE
+        #     Projection:
+        #       ProjectionType: ALL
+        GlobalSecondaryIndexes:
+          - IndexName: invertedIndex
+            KeySchema:
+              - AttributeName: PK
+                KeyType: HASH
+              - AttributeName: SK
+                KeyType: RANGE
+            Projection:
+              ProjectionType: ALL
+          # - IndexName: GSI2
+          #   KeySchema:
+          #     - AttributeName: GSI2PK
+          #       KeyType: HASH
+          #     - AttributeName: GSI2SK
+          #       KeyType: RANGE
+          #   Projection:
+          #     ProjectionType: ALL
+        BillingMode: PAY_PER_REQUEST
+
+functions:
+  transformXlsxToCsv:
+    handler: lambdas/transformXlsxToCsv.handler
+    memorySize: 10240
+    events:
+      - s3:
+          bucket: food-security-csv
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${file(./config/bucketFolders.js):first}
+            - suffix: .xlsx
+
+  pushCsvToDynamoDb:
+    handler: lambdas/pushCsvToDynamoDb.handler
+    events:
+      - s3:
+          bucket: food-security-csv
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: ${file(./config/bucketFolders.js):second}
+            - suffix: .csv
+
+  fetchClientProfile:
+    handler: apis/fetchClientProfile.handler
+    memorySize: 128
+    description: Fetch client profile
+    timeout: 20
+    events:
+      - http:
+          path: clients/{id}
+          method: get
+          cors: true
+
+  fetchClientProgrammes:
+    handler: apis/fetchClientProgrammes.handler
+    memorySize: 128
+    description: Fetch client programmes
+    timeout: 20
+    events:
+      - http:
+          path: clients/programmes/{id}
+          method: get
+          cors: true
