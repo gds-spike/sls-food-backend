@@ -4,7 +4,9 @@ metadata:
   name: sls-food-backend
   annotations:
     github.com/project-slug: gds-spike/sls-food-backend
+    github.com/owner: gds-spike
+    github.com/repo: sls-food-backend
 spec:
-  type: other
-  lifecycle: unknown
+  type: website
+  lifecycle: experimental
   owner: guests
