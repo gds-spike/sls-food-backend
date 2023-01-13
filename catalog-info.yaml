@@ -7,6 +7,6 @@ metadata:
     github.com/owner: gds-spike
     github.com/repo: sls-food-backend
 spec:
-  type: other
+  type: website
   lifecycle: experimental
   owner: guests
